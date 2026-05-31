@@ -1,8 +1,8 @@
 # Obsidian Local REST API (obsidian)
 
-**Version:** 0.1.0
+**Version:** 0.2.0
 **Backend:** HTTP
-**Tables:** 4
+**Tables:** 3
 **Functions:** 2
 **Base URL:** `https://127.0.0.1:27124`
 
@@ -23,13 +23,13 @@ coral source add --file sources/community/obsidian/manifest.yaml
 |-------|-------------|
 | `commands` | Available Obsidian command palette actions |
 | `tags` | Tags across the vault with usage counts |
-| `search_simple` | Fuzzy search results from the vault |
 | `vault_files` | Files and folders at the vault root |
 
-## Table Functions
+## Functions
 
 | Function | Description |
 |----------|-------------|
+| `search(query)` | Fuzzy search notes by keyword (returns ranked results with scores) |
 | `read_note(path)` | Read a note as structured JSON with content, tags, and frontmatter |
 | `list_directory(path)` | List files and folders in a vault directory |
 
@@ -50,7 +50,7 @@ SELECT tag, count FROM obsidian.tags ORDER BY count DESC
 ### Search notes
 
 ```sql
-SELECT filename, score FROM obsidian.search_simple WHERE query = 'project notes'
+SELECT filename, score FROM obsidian.search(query => 'project notes') LIMIT 10
 ```
 
 ### List files at vault root
@@ -87,7 +87,7 @@ coral sql "SELECT id, name FROM obsidian.commands LIMIT 1"
 coral sql "SELECT tag, count FROM obsidian.tags ORDER BY count DESC LIMIT 10"
 
 # Search for notes about a topic
-coral sql "SELECT filename, score FROM obsidian.search_simple WHERE query = 'meeting'"
+coral sql "SELECT filename, score FROM obsidian.search(query => 'meeting') LIMIT 10"
 
 # Read a specific note
 coral sql "SELECT content FROM obsidian.read_note(path => 'projects/README.md')"

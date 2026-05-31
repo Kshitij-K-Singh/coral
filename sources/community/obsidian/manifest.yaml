@@ -1,5 +1,5 @@
 name: obsidian
-version: 0.1.0
+version: 0.2.0
 dsl_version: 3
 backend: http
 description: "Query notes, searches, tags, and commands from the Obsidian Local REST API (self-hosted)."
@@ -76,46 +76,6 @@ tables:
           kind: path
           path:
             - count
-  - name: search_simple
-    description: "Fuzzy search results from the vault."
-    guide: |
-      Provide a query string using the query filter.
-    filters:
-      - name: query
-        description: Full-text query string for Obsidian search.
-    request:
-      method: POST
-      path: /search/simple/
-      query:
-        - name: query
-          from: filter
-          key: query
-    response:
-      rows_path: []
-    columns:
-      - name: filename
-        type: Utf8
-        nullable: true
-        description: Matching note filename
-        expr:
-          kind: path
-          path:
-            - filename
-      - name: score
-        type: Float64
-        nullable: true
-        description: Match score
-        expr:
-          kind: path
-          path:
-            - score
-      - name: query
-        type: Utf8
-        virtual: true
-        description: Search query filter.
-        expr:
-          kind: from_filter
-          key: query
   - name: vault_files
     description: "Files and folders at the vault root."
     request:
@@ -132,6 +92,48 @@ tables:
         expr:
           kind: current_row
 functions:
+  - name: search
+    kind: search
+    description: "Fuzzy search results from the vault."
+    fetch_limit_default: 10
+    search_limits:
+      default_top_k: 10
+      max_top_k: 100
+      max_calls_per_query: 1
+    args:
+      - name: query
+        required: true
+        bind:
+          arg: query
+    request:
+      method: POST
+      path: /search/simple/
+      query:
+        - name: query
+          from: arg
+          key: query
+    response:
+      rows_path: []
+    columns:
+      - name: query
+        type: Utf8
+        expr: {kind: from_arg, key: query}
+      - name: filename
+        type: Utf8
+        nullable: true
+        description: Matching note filename
+        expr:
+          kind: path
+          path:
+            - filename
+      - name: score
+        type: Float64
+        nullable: true
+        description: Match score
+        expr:
+          kind: path
+          path:
+            - score
   - name: read_note
     description: "Read a note as structured JSON including content, tags, and frontmatter."
     args:
@@ -205,4 +207,4 @@ test_queries:
   - "SELECT id, name FROM obsidian.commands LIMIT 1"
   - "SELECT tag, count FROM obsidian.tags LIMIT 1"
   - "SELECT name FROM obsidian.vault_files LIMIT 1"
-  - "SELECT filename, score FROM obsidian.search_simple WHERE query = 'test'"
+  - "SELECT filename, score FROM obsidian.search(query => 'test') LIMIT 5"
