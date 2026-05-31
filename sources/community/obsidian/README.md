@@ -3,7 +3,7 @@
 **Version:** 0.2.0
 **Backend:** HTTP
 **Tables:** 3
-**Functions:** 2
+**Functions:** 3
 **Base URL:** `https://127.0.0.1:27124`
 
 Query notes, commands, tags, and search results from your Obsidian vault via the [Local REST API](https://github.com/coddingtonbear/obsidian-local-rest-api) plugin.
