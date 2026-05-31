@@ -1,0 +1,67 @@
+name: onepiece
+version: 0.1.0
+dsl_version: 3
+backend: http
+description: "Query Devil Fruits from the One Piece API."
+inputs: {}
+base_url: "https://api.api-onepiece.com/v2"
+tables:
+  - name: fruits
+    description: "Devil Fruits catalog entries from the One Piece API."
+    request:
+      method: GET
+      path: /fruits/en
+    response:
+      rows_path: []
+    columns:
+      - name: id
+        type: Int64
+        nullable: false
+        description: Devil Fruit identifier
+        expr:
+          kind: path
+          path:
+            - id
+      - name: name
+        type: Utf8
+        nullable: false
+        description: Localized Devil Fruit name
+        expr:
+          kind: path
+          path:
+            - name
+      - name: description
+        type: Utf8
+        nullable: true
+        description: Devil Fruit description text
+        expr:
+          kind: path
+          path:
+            - description
+      - name: roman_name
+        type: Utf8
+        nullable: true
+        description: Romanized Devil Fruit name
+        expr:
+          kind: path
+          path:
+            - roman_name
+      - name: type
+        type: Utf8
+        nullable: true
+        description: Fruit type (Paramecia, Logia, Zoan, etc.)
+        expr:
+          kind: path
+          path:
+            - type
+      - name: image_url
+        type: Utf8
+        nullable: true
+        description: Public image URL for the Devil Fruit
+        expr:
+          kind: path
+          path:
+            - filename
+test_queries:
+  - "SELECT name, type FROM onepiece.fruits LIMIT 1"
+  - "SELECT id, roman_name FROM onepiece.fruits LIMIT 1"
