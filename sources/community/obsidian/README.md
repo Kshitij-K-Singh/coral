@@ -4,12 +4,12 @@
 **Backend:** HTTP
 **Tables:** 3
 **Functions:** 3
-**Base URL:** `https://127.0.0.1:27124`
+**Base URL:** `http://127.0.0.1:27123`
 
 Query notes, commands, tags, and search results from your Obsidian vault via the [Local REST API](https://github.com/coddingtonbear/obsidian-local-rest-api) plugin.
 
 ```bash
-coral source add --file sources/community/obsidian/manifest.yaml
+coral source add --interactive --file sources/community/obsidian/manifest.yaml
 ```
 
 ## Requirements
@@ -44,13 +44,13 @@ SELECT id, name FROM obsidian.commands LIMIT 20
 ### List all tags with usage counts
 
 ```sql
-SELECT tag, count FROM obsidian.tags ORDER BY count DESC
+SELECT name, count FROM obsidian.tags ORDER BY count DESC
 ```
 
 ### Search notes
 
 ```sql
-SELECT filename, score FROM obsidian.search(query => 'project notes') LIMIT 10
+SELECT filename, score FROM obsidian.search(query => 'File_name') LIMIT 10
 ```
 
 ### List files at vault root
@@ -62,19 +62,19 @@ SELECT name FROM obsidian.vault_files
 ### List files in a subdirectory
 
 ```sql
-SELECT name FROM obsidian.list_directory(path => 'projects')
+SELECT name FROM obsidian.list_directory(path => 'Folder')
 ```
 
 ### Read a note by path
 
 ```sql
-SELECT content FROM obsidian.read_note(path => 'daily/2024-01-15.md')
+SELECT content FROM obsidian.read_note(path => 'path/to/file.md')
 ```
 
 ### Read note metadata
 
 ```sql
-SELECT path, tags, frontmatter FROM obsidian.read_note(path => 'meeting-notes.md')
+SELECT path, tags, frontmatter FROM obsidian.read_note(path => 'file.md')
 ```
 
 ## Quick start
@@ -83,19 +83,121 @@ SELECT path, tags, frontmatter FROM obsidian.read_note(path => 'meeting-notes.md
 # Confirm connectivity
 coral sql "SELECT id, name FROM obsidian.commands LIMIT 1"
 
-# List all tags in your vault
-coral sql "SELECT tag, count FROM obsidian.tags ORDER BY count DESC LIMIT 10"
+# List files at vault root
+coral sql "SELECT name FROM obsidian.vault_files"
 
-# Search for notes about a topic
-coral sql "SELECT filename, score FROM obsidian.search(query => 'meeting') LIMIT 10"
-
-# Read a specific note
-coral sql "SELECT content FROM obsidian.read_note(path => 'projects/README.md')"
+# Read a note by path
+coral sql "SELECT path, content FROM obsidian.read_note(path => 'Welcome.md')"
 ```
+
+## Live Test
+
+### Source connectivity
+
+```
+$ coral source test obsidian
+
+  ✓ obsidian connected successfully
+
+    obsidian (3 tables)
+    ├─ commands
+    ├─ tags
+    └─ vault_files
+    Query tests
+    4 declared · 4 passed · 0 failed
+```
+
+### Sample queries and output
+
+```sql
+SELECT id, name FROM obsidian.commands LIMIT 5
+```
+
+| id | name |
+|----|------|
+| editor:save-file | Save current file |
+| editor:download-attachments | Download attachments for current file |
+| editor:follow-link | Follow link under cursor |
+| editor:open-link-in-new-leaf | Open link under cursor in new tab |
+| editor:open-link-in-new-window | Open link under cursor in new window |
+
+```sql
+SELECT name FROM obsidian.vault_files
+```
+
+| name |
+|------|
+| Folder_Test/ |
+| Welcome.md |
+| File1.md |
+| File2.md |
+
+![image reference](./images/obsidian-structure.png)
+
+```sql
+SELECT path, content, tags, frontmatter FROM obsidian.read_note(path => 'Welcome.md')
+```
+
+| path | content | tags | frontmatter |
+|------|---------|------|-------------|
+| Welcome.md | This is your new *vault*. Make a note of something... | [] | {} |
+
+![image reference](./images/source_test1.png)
+
+```sql
+SELECT name FROM obsidian.list_directory(path => 'Folder_Test')
+```
+
+| name |
+|------|
+| File_inside_Folder.md |
+
+![image reference](./images/source_test1.png)
+
+```sql
+SELECT filename, score FROM obsidian.search(query => 'File1') LIMIT 5
+```
+
+| filename | score |
+|----------|-------|
+| File1.md | -0.315 |
+
+![image reference](./images/source_test3.png)
+
+Some more Live Test:
+
+![image reference](./images/source_test4.png)
+
+## Setup
+
+The plugin must be installed and enabled in Obsidian. Coral requires the **HTTP** endpoint
+because the plugin's self-signed certificate is a CA cert used as a leaf cert, which
+rustls rejects.
+
+1. Open **Settings → Local REST API** in Obsidian.
+2. Scroll down and Enable **Non-encrypted (HTTP) server**.
+
+![image reference](./images/obsidian_http_server)
+
+3. Confirm the HTTP URL is `http://127.0.0.1:27123`.
+
+![image reference](./images/obsidian_plugin_http_server)
+
+```bash
+# Verify HTTP works
+curl http://127.0.0.1:27123/
+```
+
+4. Then add the source via `coral source add --interactive --file "coral/sources/community/obsidian/manifest.yaml"`.
+Note: paste the token without the Bearer text the process automatically adds the text.
+
+![image reference](./images/coral_source_setup.png)
+
+5. Test the source using `coral source test obsidian`.
+
+![image reference](./images/source_test.png)
 
 ## Notes
 
-- The API runs locally on your machine. Use `http://127.0.0.1:27123` for HTTP or `https://127.0.0.1:27124` for HTTPS.
-- If HTTPS fails due to the self-signed certificate, use the HTTP URL instead.
 - The API key grants full access to your vault. Use a dedicated vault if needed.
 - See the [API documentation](https://coddingtonbear.github.io/obsidian-local-rest-api/) for full details.

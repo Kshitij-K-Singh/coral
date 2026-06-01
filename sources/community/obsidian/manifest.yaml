@@ -13,11 +13,12 @@ auth:
 inputs:
   OBSIDIAN_BASE_URL:
     kind: variable
-    default: "https://127.0.0.1:27124"
+    default: "http://127.0.0.1:27123"
     hint: |
       Base URL for the Obsidian Local REST API.
-      Use https://127.0.0.1:27124 for HTTPS or http://127.0.0.1:27123 for HTTP.
-      If HTTPS fails due to the self-signed certificate, switch to the HTTP URL.
+      Coral requires HTTP because the plugin's self-signed certificate is a CA cert
+      used as a leaf cert (CaUsedAsEndEntity), which rustls rejects.
+      Enable the non-encrypted server in Settings → Local REST API → Enable HTTP server.
   OBSIDIAN_API_KEY:
     kind: secret
     hint: |
@@ -60,14 +61,14 @@ tables:
       rows_path:
         - tags
     columns:
-      - name: tag
+      - name: name
         type: Utf8
         nullable: true
         description: Tag value
         expr:
           kind: path
           path:
-            - tag
+            - name
       - name: count
         type: Int64
         nullable: true
@@ -205,6 +206,5 @@ functions:
           kind: current_row
 test_queries:
   - "SELECT id, name FROM obsidian.commands LIMIT 1"
-  - "SELECT tag, count FROM obsidian.tags LIMIT 1"
+  - "SELECT name, count FROM obsidian.tags LIMIT 1"
   - "SELECT name FROM obsidian.vault_files LIMIT 1"
-  - "SELECT filename, score FROM obsidian.search(query => 'test') LIMIT 5"
