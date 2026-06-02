@@ -76,13 +76,13 @@ by `vault_files`, `search`, or `list_directory`:
 
 ```sql
 SELECT filename, encoded_filename
-FROM obsidian.search(query => 'Note #1')
+FROM obsidian.search(query => 'NOTE #1')
 LIMIT 10
 ```
 
 ```sql
 SELECT content
-FROM obsidian.read_note(path => 'Note%20%231.md')
+FROM obsidian.read_note(path => 'NOTE%20%231.md')
 ```
 
 ### Read note metadata
@@ -141,10 +141,13 @@ SELECT name, encoded_name FROM obsidian.vault_files
 
 | name | encoded_name |
 |------|--------------|
-| Folder_Test/ | Folder_Test/ |
-| Welcome.md | Welcome.md |
 | File1.md | File1.md |
 | File2.md | File2.md |
+| Folder_Test/ | Folder_Test/ |
+| NOTE #1.md | NOTE%20%231.md |
+| NOTE #2.md | NOTE%20%232.md |
+| NOTE [#3].md | NOTE%20%5B%233%5D.md |
+| Welcome.md | Welcome.md |
 
 ![image reference](./images/obsidian-structure.png)
 
@@ -166,7 +169,7 @@ SELECT name, encoded_path FROM obsidian.list_directory(path => 'Folder_Test/')
 |------|--------------|
 | File_inside_Folder.md | Folder_Test/File_inside_Folder.md |
 
-![image reference](./images/source_test1.png)
+![image reference](./images/source_test2.png)
 
 ```sql
 SELECT filename, encoded_filename, score FROM obsidian.search(query => 'File1') LIMIT 5
@@ -174,9 +177,15 @@ SELECT filename, encoded_filename, score FROM obsidian.search(query => 'File1') 
 
 | filename | encoded_filename | score |
 |----------|------------------|-------|
-| File1.md | File1.md | -0.315 |
+| NOTE #1.md | NOTE%20%231.md | -1.0109 |
 
 ![image reference](./images/source_test3.png)
+
+```sql
+SELECT content FROM obsidian.read_note(path => 'NOTE%20%231.md')
+```
+
+![image reference](./images/source_test5.png)
 
 Some more Live Test:
 
