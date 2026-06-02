@@ -294,7 +294,7 @@ functions:
           path:
             - score
   - name: read_note
-    description: "Read a note as structured JSON including content, tags, and frontmatter. Pass a percent-encoded vault-relative path, such as encoded_name or encoded_path from Obsidian result rows."
+    description: "Read a note as structured JSON including content, tags, and frontmatter."
     args:
       - name: path
         required: true
@@ -423,7 +423,7 @@ functions:
           path:
             - frontmatter
   - name: list_directory
-    description: "List files and folders in a vault directory. Pass a percent-encoded directory path ending in '/', such as encoded_name or encoded_path from Obsidian result rows."
+    description: "List files and folders in a vault directory."
     args:
       - name: path
         required: false
