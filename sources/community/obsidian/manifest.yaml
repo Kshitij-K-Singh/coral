@@ -294,7 +294,7 @@ functions:
           path:
             - score
   - name: read_note
-    description: "Read a note as structured JSON including content, tags, and frontmatter. Pass a percent-encoded vault-relative path, such as encoded_path from Obsidian result rows."
+    description: "Read a note as structured JSON including content, tags, and frontmatter. Pass an encoded path such as encoded_path from result rows."
     args:
       - name: path
         required: true
