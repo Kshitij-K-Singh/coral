@@ -92,6 +92,84 @@ tables:
         description: File or folder name
         expr:
           kind: current_row
+      - name: encoded_name
+        type: Utf8
+        nullable: true
+        description: Percent-encoded file or folder name for path-based functions
+        expr:
+          kind: replace
+          from: ":"
+          to: "%3A"
+          expr:
+            kind: replace
+            from: "="
+            to: "%3D"
+            expr:
+              kind: replace
+              from: ";"
+              to: "%3B"
+              expr:
+                kind: replace
+                from: ","
+                to: "%2C"
+                expr:
+                  kind: replace
+                  from: "+"
+                  to: "%2B"
+                  expr:
+                    kind: replace
+                    from: "*"
+                    to: "%2A"
+                    expr:
+                      kind: replace
+                      from: ")"
+                      to: "%29"
+                      expr:
+                        kind: replace
+                        from: "("
+                        to: "%28"
+                        expr:
+                          kind: replace
+                          from: "'"
+                          to: "%27"
+                          expr:
+                            kind: replace
+                            from: "&"
+                            to: "%26"
+                            expr:
+                              kind: replace
+                              from: "$"
+                              to: "%24"
+                              expr:
+                                kind: replace
+                                from: "!"
+                                to: "%21"
+                                expr:
+                                  kind: replace
+                                  from: "]"
+                                  to: "%5D"
+                                  expr:
+                                    kind: replace
+                                    from: "["
+                                    to: "%5B"
+                                    expr:
+                                      kind: replace
+                                      from: "?"
+                                      to: "%3F"
+                                      expr:
+                                        kind: replace
+                                        from: "#"
+                                        to: "%23"
+                                        expr:
+                                          kind: replace
+                                          from: " "
+                                          to: "%20"
+                                          expr:
+                                            kind: replace
+                                            from: "%"
+                                            to: "%25"
+                                            expr:
+                                              kind: current_row
 functions:
   - name: search
     kind: search
@@ -127,6 +205,86 @@ functions:
           kind: path
           path:
             - filename
+      - name: encoded_filename
+        type: Utf8
+        nullable: true
+        description: Percent-encoded filename for read_note(path)
+        expr:
+          kind: replace
+          from: ":"
+          to: "%3A"
+          expr:
+            kind: replace
+            from: "="
+            to: "%3D"
+            expr:
+              kind: replace
+              from: ";"
+              to: "%3B"
+              expr:
+                kind: replace
+                from: ","
+                to: "%2C"
+                expr:
+                  kind: replace
+                  from: "+"
+                  to: "%2B"
+                  expr:
+                    kind: replace
+                    from: "*"
+                    to: "%2A"
+                    expr:
+                      kind: replace
+                      from: ")"
+                      to: "%29"
+                      expr:
+                        kind: replace
+                        from: "("
+                        to: "%28"
+                        expr:
+                          kind: replace
+                          from: "'"
+                          to: "%27"
+                          expr:
+                            kind: replace
+                            from: "&"
+                            to: "%26"
+                            expr:
+                              kind: replace
+                              from: "$"
+                              to: "%24"
+                              expr:
+                                kind: replace
+                                from: "!"
+                                to: "%21"
+                                expr:
+                                  kind: replace
+                                  from: "]"
+                                  to: "%5D"
+                                  expr:
+                                    kind: replace
+                                    from: "["
+                                    to: "%5B"
+                                    expr:
+                                      kind: replace
+                                      from: "?"
+                                      to: "%3F"
+                                      expr:
+                                        kind: replace
+                                        from: "#"
+                                        to: "%23"
+                                        expr:
+                                          kind: replace
+                                          from: " "
+                                          to: "%20"
+                                          expr:
+                                            kind: replace
+                                            from: "%"
+                                            to: "%25"
+                                            expr:
+                                              kind: path
+                                              path:
+                                                - filename
       - name: score
         type: Float64
         nullable: true
@@ -136,7 +294,7 @@ functions:
           path:
             - score
   - name: read_note
-    description: "Read a note as structured JSON including content, tags, and frontmatter."
+    description: "Read a note as structured JSON including content, tags, and frontmatter. Pass a percent-encoded vault-relative path, such as encoded_name or encoded_path from Obsidian result rows."
     args:
       - name: path
         required: true
@@ -160,6 +318,86 @@ functions:
           kind: path
           path:
             - path
+      - name: encoded_path
+        type: Utf8
+        nullable: true
+        description: Percent-encoded note path for path-based functions
+        expr:
+          kind: replace
+          from: ":"
+          to: "%3A"
+          expr:
+            kind: replace
+            from: "="
+            to: "%3D"
+            expr:
+              kind: replace
+              from: ";"
+              to: "%3B"
+              expr:
+                kind: replace
+                from: ","
+                to: "%2C"
+                expr:
+                  kind: replace
+                  from: "+"
+                  to: "%2B"
+                  expr:
+                    kind: replace
+                    from: "*"
+                    to: "%2A"
+                    expr:
+                      kind: replace
+                      from: ")"
+                      to: "%29"
+                      expr:
+                        kind: replace
+                        from: "("
+                        to: "%28"
+                        expr:
+                          kind: replace
+                          from: "'"
+                          to: "%27"
+                          expr:
+                            kind: replace
+                            from: "&"
+                            to: "%26"
+                            expr:
+                              kind: replace
+                              from: "$"
+                              to: "%24"
+                              expr:
+                                kind: replace
+                                from: "!"
+                                to: "%21"
+                                expr:
+                                  kind: replace
+                                  from: "]"
+                                  to: "%5D"
+                                  expr:
+                                    kind: replace
+                                    from: "["
+                                    to: "%5B"
+                                    expr:
+                                      kind: replace
+                                      from: "?"
+                                      to: "%3F"
+                                      expr:
+                                        kind: replace
+                                        from: "#"
+                                        to: "%23"
+                                        expr:
+                                          kind: replace
+                                          from: " "
+                                          to: "%20"
+                                          expr:
+                                            kind: replace
+                                            from: "%"
+                                            to: "%25"
+                                            expr:
+                                              kind: path
+                                              path:
+                                                - path
       - name: content
         type: Utf8
         nullable: true
@@ -185,7 +423,7 @@ functions:
           path:
             - frontmatter
   - name: list_directory
-    description: "List files and folders in a vault directory."
+    description: "List files and folders in a vault directory. Pass a percent-encoded directory path ending in '/', such as encoded_name or encoded_path from Obsidian result rows."
     args:
       - name: path
         required: false
@@ -193,7 +431,7 @@ functions:
           arg: path
     request:
       method: GET
-      path: /vault/{{arg.path}}/
+      path: /vault/{{arg.path|}}
     response:
       rows_path:
         - files
@@ -204,6 +442,169 @@ functions:
         description: File or folder name
         expr:
           kind: current_row
+      - name: encoded_name
+        type: Utf8
+        nullable: true
+        description: Percent-encoded file or folder name
+        expr:
+          kind: replace
+          from: ":"
+          to: "%3A"
+          expr:
+            kind: replace
+            from: "="
+            to: "%3D"
+            expr:
+              kind: replace
+              from: ";"
+              to: "%3B"
+              expr:
+                kind: replace
+                from: ","
+                to: "%2C"
+                expr:
+                  kind: replace
+                  from: "+"
+                  to: "%2B"
+                  expr:
+                    kind: replace
+                    from: "*"
+                    to: "%2A"
+                    expr:
+                      kind: replace
+                      from: ")"
+                      to: "%29"
+                      expr:
+                        kind: replace
+                        from: "("
+                        to: "%28"
+                        expr:
+                          kind: replace
+                          from: "'"
+                          to: "%27"
+                          expr:
+                            kind: replace
+                            from: "&"
+                            to: "%26"
+                            expr:
+                              kind: replace
+                              from: "$"
+                              to: "%24"
+                              expr:
+                                kind: replace
+                                from: "!"
+                                to: "%21"
+                                expr:
+                                  kind: replace
+                                  from: "]"
+                                  to: "%5D"
+                                  expr:
+                                    kind: replace
+                                    from: "["
+                                    to: "%5B"
+                                    expr:
+                                      kind: replace
+                                      from: "?"
+                                      to: "%3F"
+                                      expr:
+                                        kind: replace
+                                        from: "#"
+                                        to: "%23"
+                                        expr:
+                                          kind: replace
+                                          from: " "
+                                          to: "%20"
+                                          expr:
+                                            kind: replace
+                                            from: "%"
+                                            to: "%25"
+                                            expr:
+                                              kind: current_row
+      - name: encoded_path
+        type: Utf8
+        nullable: true
+        description: Percent-encoded vault-relative child path
+        expr:
+          kind: template
+          template: "{{expr.directory}}{{expr.name}}"
+          values:
+            directory:
+              kind: from_arg
+              key: path
+            name:
+              kind: replace
+              from: ":"
+              to: "%3A"
+              expr:
+                kind: replace
+                from: "="
+                to: "%3D"
+                expr:
+                  kind: replace
+                  from: ";"
+                  to: "%3B"
+                  expr:
+                    kind: replace
+                    from: ","
+                    to: "%2C"
+                    expr:
+                      kind: replace
+                      from: "+"
+                      to: "%2B"
+                      expr:
+                        kind: replace
+                        from: "*"
+                        to: "%2A"
+                        expr:
+                          kind: replace
+                          from: ")"
+                          to: "%29"
+                          expr:
+                            kind: replace
+                            from: "("
+                            to: "%28"
+                            expr:
+                              kind: replace
+                              from: "'"
+                              to: "%27"
+                              expr:
+                                kind: replace
+                                from: "&"
+                                to: "%26"
+                                expr:
+                                  kind: replace
+                                  from: "$"
+                                  to: "%24"
+                                  expr:
+                                    kind: replace
+                                    from: "!"
+                                    to: "%21"
+                                    expr:
+                                      kind: replace
+                                      from: "]"
+                                      to: "%5D"
+                                      expr:
+                                        kind: replace
+                                        from: "["
+                                        to: "%5B"
+                                        expr:
+                                          kind: replace
+                                          from: "?"
+                                          to: "%3F"
+                                          expr:
+                                            kind: replace
+                                            from: "#"
+                                            to: "%23"
+                                            expr:
+                                              kind: replace
+                                              from: " "
+                                              to: "%20"
+                                              expr:
+                                                kind: replace
+                                                from: "%"
+                                                to: "%25"
+                                                expr:
+                                                  kind: current_row
 test_queries:
   - "SELECT id, name FROM obsidian.commands LIMIT 1"
   - "SELECT name, count FROM obsidian.tags LIMIT 1"

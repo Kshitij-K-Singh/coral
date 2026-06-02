@@ -30,8 +30,8 @@ coral source add --interactive --file sources/community/obsidian/manifest.yaml
 | Function | Description |
 |----------|-------------|
 | `search(query)` | Fuzzy search notes by keyword (returns ranked results with scores) |
-| `read_note(path)` | Read a note as structured JSON with content, tags, and frontmatter |
-| `list_directory(path)` | List files and folders in a vault directory |
+| `read_note(path)` | Read a note as structured JSON with content, tags, and frontmatter. Use a percent-encoded vault path. |
+| `list_directory(path)` | List files and folders in a vault directory. Use a percent-encoded directory path ending in `/`. |
 
 ## Example Queries
 
@@ -56,13 +56,13 @@ SELECT filename, score FROM obsidian.search(query => 'File_name') LIMIT 10
 ### List files at vault root
 
 ```sql
-SELECT name FROM obsidian.vault_files
+SELECT name, encoded_name FROM obsidian.vault_files
 ```
 
 ### List files in a subdirectory
 
 ```sql
-SELECT name FROM obsidian.list_directory(path => 'Folder')
+SELECT name, encoded_path FROM obsidian.list_directory(path => 'Folder/')
 ```
 
 ### Read a note by path
@@ -71,10 +71,24 @@ SELECT name FROM obsidian.list_directory(path => 'Folder')
 SELECT content FROM obsidian.read_note(path => 'path/to/file.md')
 ```
 
+For paths containing reserved URL characters, pass the encoded value returned
+by `vault_files`, `search`, or `list_directory`:
+
+```sql
+SELECT filename, encoded_filename
+FROM obsidian.search(query => 'Note #1')
+LIMIT 10
+```
+
+```sql
+SELECT content
+FROM obsidian.read_note(path => 'Note%20%231.md')
+```
+
 ### Read note metadata
 
 ```sql
-SELECT path, tags, frontmatter FROM obsidian.read_note(path => 'file.md')
+SELECT path, encoded_path, tags, frontmatter FROM obsidian.read_note(path => 'file.md')
 ```
 
 ## Quick start
@@ -84,7 +98,7 @@ SELECT path, tags, frontmatter FROM obsidian.read_note(path => 'file.md')
 coral sql "SELECT id, name FROM obsidian.commands LIMIT 1"
 
 # List files at vault root
-coral sql "SELECT name FROM obsidian.vault_files"
+coral sql "SELECT name, encoded_name FROM obsidian.vault_files"
 
 # Read a note by path
 coral sql "SELECT path, content FROM obsidian.read_note(path => 'Welcome.md')"
@@ -104,7 +118,7 @@ $ coral source test obsidian
     ├─ tags
     └─ vault_files
     Query tests
-    4 declared · 4 passed · 0 failed
+    3 declared · 3 passed · 0 failed
 ```
 
 ### Sample queries and output
@@ -122,15 +136,15 @@ SELECT id, name FROM obsidian.commands LIMIT 5
 | editor:open-link-in-new-window | Open link under cursor in new window |
 
 ```sql
-SELECT name FROM obsidian.vault_files
+SELECT name, encoded_name FROM obsidian.vault_files
 ```
 
-| name |
-|------|
-| Folder_Test/ |
-| Welcome.md |
-| File1.md |
-| File2.md |
+| name | encoded_name |
+|------|--------------|
+| Folder_Test/ | Folder_Test/ |
+| Welcome.md | Welcome.md |
+| File1.md | File1.md |
+| File2.md | File2.md |
 
 ![image reference](./images/obsidian-structure.png)
 
@@ -145,22 +159,22 @@ SELECT path, content, tags, frontmatter FROM obsidian.read_note(path => 'Welcome
 ![image reference](./images/source_test1.png)
 
 ```sql
-SELECT name FROM obsidian.list_directory(path => 'Folder_Test')
+SELECT name, encoded_path FROM obsidian.list_directory(path => 'Folder_Test/')
 ```
 
-| name |
-|------|
-| File_inside_Folder.md |
+| name | encoded_path |
+|------|--------------|
+| File_inside_Folder.md | Folder_Test/File_inside_Folder.md |
 
 ![image reference](./images/source_test1.png)
 
 ```sql
-SELECT filename, score FROM obsidian.search(query => 'File1') LIMIT 5
+SELECT filename, encoded_filename, score FROM obsidian.search(query => 'File1') LIMIT 5
 ```
 
-| filename | score |
-|----------|-------|
-| File1.md | -0.315 |
+| filename | encoded_filename | score |
+|----------|------------------|-------|
+| File1.md | File1.md | -0.315 |
 
 ![image reference](./images/source_test3.png)
 
