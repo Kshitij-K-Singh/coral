@@ -172,7 +172,7 @@ SELECT name, encoded_path FROM obsidian.list_directory(path => 'Folder_Test/')
 ![image reference](./images/source_test2.png)
 
 ```sql
-SELECT filename, encoded_filename, score FROM obsidian.search(query = 'NOTE #1') LIMIT 5
+SELECT filename, encoded_filename, score FROM obsidian.search(query => 'NOTE #1') LIMIT 5
 ```
 
 | filename | encoded_filename | score |
