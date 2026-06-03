@@ -211,7 +211,7 @@ rustls rejects.
 curl http://127.0.0.1:27123/
 ```
 
-4. Then add the source via `coral source add --interactive --file "coral/sources/community/obsidian/manifest.yaml"`.
+4. Then add the source via `coral source add --interactive --file sources/community/obsidian/manifest.yaml`.
 Note: paste the token without the Bearer text the process automatically adds the text.
 
 ![image reference](./images/coral_source_setup.png)

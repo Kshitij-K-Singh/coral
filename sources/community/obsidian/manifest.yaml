@@ -294,7 +294,7 @@ functions:
           path:
             - score
   - name: read_note
-    description: "Read a note as structured JSON including content, tags, and frontmatter. Use encoded_path from result rows for the path argument."
+    description: "Read a note as structured JSON including content, tags, and frontmatter. Use an encoded path column for the path argument."
     args:
       - name: path
         required: true
@@ -407,7 +407,7 @@ functions:
           path:
             - content
       - name: tags
-        type: Utf8
+        type: Json
         nullable: true
         description: Tags found in the note
         expr:
@@ -415,9 +415,9 @@ functions:
           path:
             - tags
       - name: frontmatter
-        type: Utf8
+        type: Json
         nullable: true
-        description: Frontmatter properties as JSON
+        description: Frontmatter properties
         expr:
           kind: path
           path:
