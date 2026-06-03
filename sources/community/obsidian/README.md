@@ -200,11 +200,11 @@ rustls rejects.
 1. Open **Settings → Local REST API** in Obsidian.
 2. Scroll down and Enable **Non-encrypted (HTTP) server**.
 
-![image reference](./images/obsidian_http_server)
+![image reference](./images/obsidian_http_server.png)
 
 3. Confirm the HTTP URL is `http://127.0.0.1:27123`.
 
-![image reference](./images/obsidian_plugin_http_server)
+![image reference](./images/obsidian_plugin_http_server.png)
 
 ```bash
 # Verify HTTP works
